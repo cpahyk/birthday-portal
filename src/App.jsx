@@ -93,12 +93,12 @@ function useConfetti(active, colors, style) {
     const resize = () => { c.width = c.offsetWidth; c.height = c.offsetHeight; };
     resize(); window.addEventListener("resize", resize);
     const shapes = ["circle","rect","tri"];
-    const spawn = (n=14) => { for(let i=0;i<n;i++) pts.current.push({x:Math.random()*c.width,y:-20,r:Math.random()*9+4,color:colors[Math.floor(Math.random()*colors.length)],shape:shapes[Math.floor(Math.random()*shapes.length)],vx:(Math.random()-.5)*5,vy:Math.random()*3+2,angle:Math.random()*Math.PI*2,spin:(Math.random()-.5)*.25,op:1}); };
+    const spawn = (n=6) => { for(let i=0;i<n;i++) pts.current.push({x:Math.random()*c.width,y:-20,r:Math.random()*9+4,color:colors[Math.floor(Math.random()*colors.length)],shape:shapes[Math.floor(Math.random()*shapes.length)],vx:(Math.random()-.5)*5,vy:Math.random()*3+2,angle:Math.random()*Math.PI*2,spin:(Math.random()-.5)*.25,op:1}); };
     let frame=0;
     const loop = () => {
       ctx.clearRect(0,0,c.width,c.height);
-      if(frame%6===0) spawn(); frame++;
-      pts.current = pts.current.filter(p=>p.op>0.05);
+      if(frame%10===0) spawn(); frame++;
+      pts.current = pts.current.filter(p=>p.op>0.05).slice(-80);
       pts.current.forEach(p => {
         p.x+=p.vx; p.y+=p.vy; p.angle+=p.spin; p.vy+=.07;
         if(p.y>c.height*.72) p.op-=.018;
@@ -127,7 +127,7 @@ function useConfetti(active, colors, style) {
 
 // ── UI COMPONENTS ─────────────────────────────────────────────────────
 const FloatingOrbs = ({a}) => {
-  const orbs = Array.from({length:10},(_,i)=>({id:i,s:Math.random()*200+80,l:Math.random()*100,t:Math.random()*100,d:Math.random()*6,dur:Math.random()*8+10}));
+  const orbs = Array.from({length:5},(_,i)=>({id:i,s:Math.random()*200+80,l:Math.random()*100,t:Math.random()*100,d:Math.random()*6,dur:Math.random()*8+10}));
   return(<div style={{position:"absolute",inset:0,overflow:"hidden",pointerEvents:"none"}}>
     {orbs.map(o=><div key={o.id} style={{position:"absolute",width:o.s,height:o.s,left:`${o.l}%`,top:`${o.t}%`,borderRadius:"50%",background:`radial-gradient(circle,${a}18 0%,${a}05 60%,transparent 80%)`,animation:`floatOrb ${o.dur}s ease-in-out ${o.d}s infinite alternate`}}/>)}
   </div>);
@@ -135,7 +135,7 @@ const FloatingOrbs = ({a}) => {
 
 const Balloons = ({colors}) => (
   <div style={{position:"absolute",bottom:0,left:0,right:0,pointerEvents:"none"}}>
-    {colors.slice(0,6).map((c,i)=>(
+    {colors.slice(0,4).map((c,i)=>(
       <div key={i} style={{position:"absolute",left:`${8+i*18}%`,bottom:0,animation:`riseUp 3.5s ease-out ${i*.35}s forwards`}}>
         <div style={{width:44,height:54,background:`radial-gradient(circle at 35% 35%,${c}ee,${c}88)`,borderRadius:"50% 50% 50% 50%/60% 60% 40% 40%",position:"relative"}}>
           <div style={{position:"absolute",bottom:-2,left:"50%",transform:"translateX(-50%)",width:2,height:64,background:`${c}88`}}/>
@@ -147,9 +147,9 @@ const Balloons = ({colors}) => (
 
 const Fireworks = ({a}) => (
   <div style={{position:"absolute",inset:0,pointerEvents:"none",overflow:"hidden"}}>
-    {[8,24,40,56,72,88].map((x,i)=>(
+    {[15,50,85].map((x,i)=>(
       <div key={i} style={{position:"absolute",left:`${x}%`,top:"15%",animation:`firework 2.4s ease-out ${i*.5}s infinite`}}>
-        {[0,45,90,135,180,225,270,315].map((deg,j)=>(
+        {[0,60,120,180,240,300].map((deg,j)=>(
           <div key={j} style={{position:"absolute",width:3,height:30,background:`linear-gradient(${a},transparent)`,transformOrigin:"top center",transform:`rotate(${deg}deg)`,animation:`ray 2.4s ease-out ${i*.5}s infinite`,borderRadius:3}}/>
         ))}
       </div>
@@ -321,7 +321,6 @@ function SetupPage({onGenerate}) {
 
   return(
     <div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:T.bg,fontFamily:"'DM Sans',sans-serif",padding:"28px 16px",position:"relative",overflow:"hidden"}}>
-      <FloatingOrbs a={T.a}/>
       <div style={{position:"relative",zIndex:10,width:"100%",maxWidth:500}}>
 
         {/* Language Bar */}
@@ -432,7 +431,6 @@ function SharePage({data,link,onBack}) {
 
   return(
     <div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:T.bg,fontFamily:"'DM Sans',sans-serif",padding:"28px 16px",position:"relative",overflow:"hidden"}}>
-      <FloatingOrbs a={T.a}/>
       <div style={{position:"relative",zIndex:10,width:"100%",maxWidth:480,textAlign:"center"}}>
         <div style={{fontSize:50,marginBottom:12,animation:"popIn .6s both"}}>🎊</div>
         <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:"clamp(1.4rem,5vw,2rem)",fontWeight:900,color:"#fff",marginBottom:5}}>
